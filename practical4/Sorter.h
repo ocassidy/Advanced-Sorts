@@ -18,6 +18,19 @@
 template <class T>
 class Sorter
 {
+private:
+
+	void swap(T &a, T &b);
+
+	int qpartition(Array<T> & data, int low, int high);
+	void qsort(Array<T> & data, int low, int high);
+
+	void merge(Array<T> &, Array<T> &, int leftS, int rightS, int rightE);
+	void divide(Array<T> &, Array<T> &, int left, int right);
+
+	static const int DEF_SIZE = 10;
+	Array<T> elements;
+
 public:
 	Sorter(int size = DEF_SIZE);
 
@@ -52,19 +65,6 @@ public:
 
 	// print elements to specified output stream
 	void print(std::ostream & os) const;
-
-private:
-
-	void swap(T &a, T &b);
-
-	int qpartition(Array<T> & data, int low, int high);
-	void qsort(Array<T> & data, int low, int high);
-
-	void merge(Array<T> &, Array<T> &, int leftS, int rightS, int rightE);
-	void divide(Array<T> &, Array<T> &, int left, int right); 
-
-	static const int DEF_SIZE=10;
-	Array<T> elements;
 };
 
 // --------------------------- Sorter Implementation -------------------
@@ -121,47 +121,57 @@ int Sorter<T>::binarySearch(const T & element)
 		}
 	}
 	return -1;
-
 }
 
 // PostCondition: collection elements are sorted
 template <class T>
 void Sorter<T>::selectionSort() {
-    int min, moves=0, comps=0;
+	int min;
+	int comparisons = 0;
+	int movements = 0;
 
-    for (int marker = 0; marker < elements.length()-1; marker++) {
-      min = marker;
-      for (int i = marker+1; i < elements.length(); i++) {
-		comps++;
-        if (elements[i] < elements[min])
-          min = i;
-      }
-      // swap elements at position min and out
-	  moves+=3;
-      T tmp = elements[marker];
-      elements[marker] = elements[min];
-      elements[min] = tmp;
-    }
-	//cout << "Selection sort : Comps: " << comps << " Moves: " << moves << endl;
+	for (int marker = 0; marker < elements.length() - 1; marker++) {
+		min = marker;
+		for (int i = marker + 1; i < elements.length(); i++) {
+			comparisons++;
+			if (elements[i] < elements[min]) {
+				min = i;
+			}
+		}
+
+		// swap elements at position min and out
+		/*T tmp = elements[marker];
+		elements[marker] = elements[min];
+		elements[min] = tmp;*/
+
+		std::swap(elements[min], elements[marker]);
+		movements += 3;
+	}
+	//std::cout << "Selection Moves = " << movements << " Comparisons = " << comparisons << std::endl;
 }
 
 
 // PostCondition: collection elements are sorted
 template <class T>
 void Sorter<T>::insertionSort() {
-   int comps = 0, moves = 0;
-   int in, out, temp;
-   for (out=1; out < elements.length(); out++) {
-     temp = elements[out]; 	 moves++;	// 
-	 // find position for temp
-     for (in=out; in > 0 && elements[in-1] >= temp; in--) {
-        elements[in] = elements[in-1];
-		comps++; moves++;			// one comp and one move on each iteration
-     }
-	 comps++;						// final comp which terminates loop above
-     elements[in] = temp; moves++;	// additional move
-   }
-  // cout << "Insertion sort : Comps: " << comps << " Moves: " << moves << endl;
+	int in, out, temp;
+	int comparisons = 0;
+	int movements = 0;
+
+	for (out = 1; out < elements.length(); out++) {
+		temp = elements[out]; movements++;
+
+		// find position for temp
+		comparisons++;
+		for (in = out; in > 0 && elements[in - 1] >= temp; in--) {
+			elements[in] = elements[in - 1]; movements++;
+			comparisons++;
+		}
+		// place temp in new position
+		elements[in] = temp; movements++;
+	}
+	
+	//std::cout << "Selection Moves = " << movements << " Comparisons = " << comparisons << std::endl;
 }
 
 
@@ -329,5 +339,4 @@ void Sorter<T>::writeFile(const std::string & fname) {
 	}
 	out_stream.close();
 }
-
 #endif
